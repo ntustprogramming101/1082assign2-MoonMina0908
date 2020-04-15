@@ -216,6 +216,8 @@ void draw() {
           life=2;
           cabbageX=floor(random(8))*square;
           cabbageY=square*2+floor(random(4))*square;
+          soldierX=-square;
+          soldierY=square*2+floor(random(4))*square; 
         }
         }else{
         buttonHoveredX=width;
