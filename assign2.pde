@@ -4,8 +4,7 @@ float buttonHoveredX,buttonHoveredY;
 int life;
 float lifeX=10, lifeY=10, lifeGap=70;
 
-float groundhogX, groundhogY, groundhogMove = 80;
-float groundhogX1, groundhogY1;
+float groundhogX, groundhogY, groundhogMoveX = 80, groundhogMoveY = 80;
 
 float lawnHeight=15;
 final float square =80;
@@ -25,9 +24,9 @@ boolean left =false;
 boolean down =false;
 boolean up =false;
 
-
-int nowTime;
-int lastTime;
+int moveFrame;
+float newTime;
+float lastTime;
 
 PImage bgImg;
 
@@ -83,6 +82,8 @@ void setup() {
   //life starting
   life=2;
   
+  lastTime=millis();
+  frameRate(60);
 }
 
 void draw() {
@@ -155,17 +156,33 @@ void draw() {
       }
       
       //groundhog
-      if(right==true){
-        image(groundhogRightImg,groundhogX,groundhogY);
+      if(left){
+        if( groundhogMoveX>=groundhogX ){
+          image( groundhogLeftImg , groundhogMoveX, groundhogY );
+          groundhogMoveX -= (square/15);
+        }else{
+          left = false;
+        }
       }
-      else if(left==true){
-        image(groundhogLeftImg,groundhogX,groundhogY);
+      else if( right ){
+        if( groundhogMoveX<=groundhogX ){
+          image( groundhogRightImg , groundhogMoveX, groundhogY );
+          groundhogMoveX += (square/15);
+        }else{
+          right = false;
+        }
       }
-      else if(down==true){
-        image(groundhogDownImg,groundhogX,groundhogY);
+      else if(down){
+        if( groundhogMoveY<=groundhogY ){
+          image( groundhogDownImg , groundhogX, groundhogMoveY );
+          groundhogMoveY += (square/15);
+        }else{
+          down = false;
+        }
       }
-      else{image(groundhogIdleImg,groundhogX,groundhogY);}
-      
+      else{
+        image( groundhogIdleImg,groundhogX,groundhogY );
+      }
       
       //boundary check
       if(groundhogX>width- groundhogIdleImg.width){
@@ -229,44 +246,37 @@ void draw() {
   }
 }
 
-void keyPressed(){
-  if(key == CODED){
-    switch(keyCode){
-      case RIGHT:
-        groundhogX +=square;
-        nowTime = millis();
-        if(nowTime-lastTime>=1){
-          right=true;
-          lastTime = millis();
-        }
-        break;
+void keyPressed(){ 
+    float newTime = millis();
+    if(key==CODED){
+      switch( keyCode ){
         case LEFT:
-          groundhogX -=square; 
-          nowTime = millis();
-        if(nowTime-lastTime>=1){
-          left=true;
-          lastTime = millis();
-        }
-          break;
-        case DOWN:
-          groundhogY +=square; 
-          nowTime = millis();
-          if(nowTime-lastTime>=1){
-            down=true;
-            lastTime = millis();
+          if(newTime - lastTime> 250){
+            groundhogMoveX = groundhogX;
+            left = true;
+            groundhogX -= square;
+            lastTime=newTime;
           }
           break;
+          
+        case RIGHT:
+          if(newTime - lastTime> 250){
+              groundhogMoveX = groundhogX;
+              right = true;
+              groundhogX += square;
+              lastTime=newTime;
+            }
+          break;
+          
+        case DOWN:
+          if(newTime - lastTime> 250){
+              groundhogMoveY = groundhogY;
+              down = true;
+              groundhogY += square;
+              lastTime=newTime;
+            }
+          break;   
+       }
+    }
         /*case UP:groundhogY -=square; break;*/
     }
-  }
-}
-////////
-void keyReleased(){
-  if(key==CODED){
-    switch(keyCode){
-      case RIGHT:right=false;break;
-      case LEFT:left=false;break;
-      case DOWN:down=false;break;
-    }
-  }
-}
